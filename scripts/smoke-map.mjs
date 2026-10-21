@@ -73,7 +73,25 @@ try {
   assert.equal((await page.locator("#shapePreview svg").count()),0);
   assert.equal((await page.locator("#namePreview").innerText()).trim(),"");
   assert.equal((await page.locator("#flagPreview").innerText()).length>0,true);
-  assert.deepEqual(errors,[],"Browser errors");
+  await page.locator("#shape").check();
+  await page.locator("#name").check();
+  await page.locator("#region").selectOption("world");
+  await page.locator("#count").selectOption("all");
+  const completeAll=await page.evaluate((list)=>{
+    const byName=Object.fromEntries(list.map(c=>[c.ja,c.iso]));
+    for(let i=0;i<195;i++){
+      const active=document.getElementById("namePreview").textContent.trim();
+      const iso=byName[active];
+      if(!iso)throw Error("Unexpected puzzle prompt: "+active);
+      const target=document.querySelector('path.land.playable[data-iso="'+iso+'"]');
+      if(!target)throw Error("No selectable polygon for "+iso);
+      target.dispatchEvent(new MouseEvent("click",{bubbles:true}));
+      if(document.getElementById("progress").textContent.trim()!==(i+1)+" / 195")throw Error("Could not place "+iso+" at index "+i);
+    }
+    return document.getElementById("progress").textContent.trim();
+  },data);
+  assert.equal(completeAll,"195 / 195","Entire world puzzle must be finishable");
+    assert.deepEqual(errors,[],"Browser errors");
   console.log("PASS: 195 selectable countries; six region totals; microstate markers; language, flags, shape, zoom, 10 correct answers and reload.");
 } finally {
   if(browser)await browser.close();
