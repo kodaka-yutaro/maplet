@@ -66,6 +66,8 @@ try {
   await page.reload({waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.querySelectorAll("path.land.playable").length===195,{timeout:45000});
   assert.equal((await page.locator("#progress").innerText()).trim(),"10 / 10","Completion should persist after reload");
+  await page.locator("#reset").click();
+  assert.equal((await page.locator("#progress").innerText()).trim(),"0 / 10","New game should start after completion");
   await page.locator("#shape").uncheck();
   await page.locator("#name").uncheck();
   assert.equal((await page.locator("#shapePreview svg").count()),0);
