@@ -54,7 +54,7 @@
   function updateLabels(){
     document.documentElement.lang=lang;
     for(const k of Object.keys(T[lang])){
-      if($(k)&&k!=="regions")$(k).textContent=label(k);
+      if($(k)&&k!=="regions"&&!["zoomIn","zoomOut","zoomReset"].includes(k))$(k).textContent=label(k);
     }
     Array.from($("region").options).forEach((opt,i)=>{opt.textContent=label("regions")[i]});
     Array.from($("count").options).forEach((opt,i)=>{opt.textContent=i===2?(lang==="ja"?"すべて":"All"):(i===0?"10":"20")+(lang==="ja"?"か国":" countries")});
